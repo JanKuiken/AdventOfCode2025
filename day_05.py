@@ -52,6 +52,14 @@ def have_overlap(r1, r2):
             or (r2.stop  >= r1.start and r2.stop  <= r1.stop)
             or (r2.start <= r1.start and r2.stop  >= r1.stop)
             or (r1.start <= r2.start and r1.stop  >= r2.stop))
+
+# above function can be simplified
+
+def have_no_overlap(r1, r2):
+    return r2.stop < r1.start or r2.start > r1.stop
+    
+def have_overlap_2(r1, r2):
+    return not have_no_overlap(r1, r2)
             
 def merge(r1, r2):
     # only call this if r1 and r2 have overlap
@@ -63,7 +71,7 @@ def merge(r1, r2):
 N = len(fresh_ranges)
 for i1 in range(0, N-1):
     for i2 in range(i1+1, N):
-        if have_overlap(fresh_ranges[i1], fresh_ranges[i2]):
+        if have_overlap_2(fresh_ranges[i1], fresh_ranges[i2]):
             merged = merge(fresh_ranges[i1], fresh_ranges[i2])
             fresh_ranges[i1] = INVALID
             fresh_ranges[i2] = merged
