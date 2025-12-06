@@ -36,49 +36,6 @@ def print_matrix(matrix):
 
 # some named tuples
 Point = namedtuple("Point", "x y")
-MatrixPoint = namedtuple("MatrixPoint", "row col")
-
-
-def neighbours(x, y, xmin=0, xmax=100, ymin=0, ymax=100):
-    """
-    Returns a set of (x,y) tuples
-    """
-    retval = set()
-    for the_x in range(x-1, x+2):
-        for the_y in range(y-1, y+2):
-            if (     the_x >= xmin
-                 and the_x <= xmax
-                 and the_y >= ymin
-                 and the_y <= ymax ) :
-                retval.add((the_x, the_y))
-    retval.remove((x,y))
-    return retval
-
-def point_neighbours(point, 
-                     min_point=Point(0,0), 
-                     max_point=Point(100,100)):
-                    
-    results = neighbours(point.x, 
-                         point.y,
-                         xmin = min_point.x,
-                         xmax = max_point.x,
-                         ymin = min_point.y,
-                         ymax = max_point.y )
-
-    return set([Point(res[0], res[1]) for res in results])
-
-def matrix_neighbours(matrix_point, 
-                      min_matrix_point=MatrixPoint(0,0),
-                      max_matrix_point=MatrixPoint(100,100)):
-                      
-    results = neighbours(matrix_point.row, 
-                         matrix_point.col,
-                         xmin = min_matrix_point.row,
-                         xmax = max_matrix_point.col,
-                         ymin = min_matrix_point.row,
-                         ymax = max_matrix_point.col )
-
-    return set([MatrixPoint(res[0], res[1]) for res in results])
 
 def numbers_from_str(s):
     """
@@ -315,7 +272,7 @@ def test_my_dijkstra_functions():
         print('prev', prev)
 
 
-class TablePoint:
+class TableCell:
     """ A minimal class with row,col integers for indexing a table or matrix.
 Operators +,- and *(int) are implemented
 Size of table or matrix is defined with the class variables (min/max_row/col),
@@ -333,35 +290,35 @@ Size of table or matrix is defined with the class variables (min/max_row/col),
         self.col = col
 
     def isInbounds(self):
-        return     self.row >= TablePoint.min_row \
-               and self.row <  TablePoint.max_row \
-               and self.col >= TablePoint.min_col \
-               and self.col <  TablePoint.max_col \
+        return     self.row >= TableCell.min_row \
+               and self.row <  TableCell.max_row \
+               and self.col >= TableCell.min_col \
+               and self.col <  TableCell.max_col \
                
     def __repr__(self):
         str_inbounds = ''
         if not self.isInbounds():
             str_inbounds = ' (out of bounds)'
-        return 'TablePoint(' + str(self.row) + ', ' + str(self.col) + ')' + str_inbounds
+        return 'TableCell(' + str(self.row) + ', ' + str(self.col) + ')' + str_inbounds
 
     def __add__(self, other):
-        assert isinstance(other, TablePoint), 'Oops, expected a MatrixPoint'
-        return TablePoint(self.row + other.row, self.col + other.col)
+        assert isinstance(other, TableCell), 'Oops, expected a MatrixPoint'
+        return TableCell(self.row + other.row, self.col + other.col)
 
     def __sub__(self, other):
-        assert isinstance(other, TablePoint), 'Oops, expected a MatrixPoint'
-        return TablePoint(self.row - other.row, self.col - other.col)
+        assert isinstance(other, TableCell), 'Oops, expected a MatrixPoint'
+        return TableCell(self.row - other.row, self.col - other.col)
 
     def __mul__(self, other):
         assert isinstance(other, int), 'Oops, expected an int'
-        return TablePoint(self.row * other, self.col * other)
+        return TableCell(self.row * other, self.col * other)
 
     def __eq__(self, other):
-        assert isinstance(other, TablePoint), 'Oops, expected a MatrixPoint'
+        assert isinstance(other, TableCell), 'Oops, expected a MatrixPoint'
         return self.row == other.row and self.col == other.col
 
     def __lt__(self, other):
-        assert isinstance(other, TablePoint), 'Oops, expected a MatrixPoint'
+        assert isinstance(other, TableCell), 'Oops, expected a MatrixPoint'
         return (self.row ** 2 + self.col ** 2) < (other.row ** 2 + other.col ** 2)    
 
     def __hash__(self):
@@ -371,24 +328,24 @@ Size of table or matrix is defined with the class variables (min/max_row/col),
         result = []
         for row in range(self.row - 1, self.row + 2):
             for col in range(self.col - 1, self.col + 2):
-                tp = TablePoint(row, col)
+                tp = TableCell(row, col)
                 if tp.isInbounds() and tp != self:
                     result.append(tp)
         return result
 
     def cartesian_neighbours(self):
         result = []
-        for tp in [ TablePoint( self.row -1, self.col    ),
-                    TablePoint( self.row +1, self.col    ),
-                    TablePoint( self.row   , self.col -1 ),
-                    TablePoint( self.row   , self.col +1 ), ] :
+        for tp in [ TableCell( self.row -1, self.col    ),
+                    TableCell( self.row +1, self.col    ),
+                    TableCell( self.row   , self.col -1 ),
+                    TableCell( self.row   , self.col +1 ), ] :
             if tp.isInbounds(): result.append(tp)
         return result
 
     def iterate():
-        for row in range(TablePoint.min_row, TablePoint.max_row):
-            for col in range(TablePoint.min_col, TablePoint.max_col):
-                yield(TablePoint(row,col))
+        for row in range(TableCell.min_row, TableCell.max_row):
+            for col in range(TableCell.min_col, TableCell.max_col):
+                yield(TableCell(row,col))
 
 
 # Added first for 2023-day-25, trying to keep it general... but added data member...
