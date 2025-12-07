@@ -55,7 +55,6 @@ for row in range(n_rows-2, 0, -1):
 # answer is the single non zero value of row 1
 print('answer part 2 :', sum(times[1]))
 
-
 # just for fun, with recursion and caching
 
 cache = {}
@@ -82,4 +81,17 @@ for col in range(n_cols):
         start_col = col
 
 print('answer part 2 :', time_lines(0, start_col))
+
+# strike 3 using Python's @cache decorator
+from functools import cache
+@cache
+def time_lines_2(row, col):
+    if row == n_rows-1:
+        return 1
+    if matrix[row+1][col] == '^':
+        return time_lines_2(row+1, col-1) + time_lines_2(row+1, col+1)
+    else:
+        return time_lines_2(row+1, col)
+
+print('answer part 2 :', time_lines_2(0, start_col))
 
