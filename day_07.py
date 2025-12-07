@@ -55,3 +55,31 @@ for row in range(n_rows-2, 0, -1):
 # answer is the single non zero value of row 1
 print('answer part 2 :', sum(times[1]))
 
+
+# just for fun, with recursion and caching
+
+cache = {}
+
+def time_lines(row, col):
+    global cache
+    if row == n_rows-1:
+        return 1
+    if (row,col) in cache.keys():
+        return cache[(row,col)]
+    if matrix[row+1][col] == '^':
+        value = time_lines(row+1, col-1) + time_lines(row+1, col+1)
+        cache[(row,col)] = value
+        return value
+    else:
+        value = time_lines(row+1, col)
+        cache[(row,col)] = value
+        return value
+
+# find starting point
+start_col = None
+for col in range(n_cols):
+    if matrix[0][col] == 'S':
+        start_col = col
+
+print('answer part 2 :', time_lines(0, start_col))
+
