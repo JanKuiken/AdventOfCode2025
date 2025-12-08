@@ -14,7 +14,12 @@ for line in lines:
     z = int(z)
     boxes.append((x,y,z))
 
-N = len(boxes)
+N = len(boxes)  # not really a constant, but who cares
+
+# Afstanden tussen de boxes
+# vanwege symetrie hoeven we alleen de rigth-upper driehoek van de afstand
+# matrix te berekenen en voor dit probleem bewaren we de resultaten in een
+# lijst met tuples met afstand en indices van de twee punten.
 
 distances = []
 for i in range(0, N-2):
@@ -57,6 +62,7 @@ def join_network_elements(i,j):
 # ik denk dat we nu de ingredienten hebben, let's go
 #   " connect together the 1000 pairs of junction boxes 
 #     which are closest together. "
+
 for dist, i, j in distances[:1000]:
     join_network_elements(i,j)
 
@@ -78,12 +84,14 @@ print('answer part 1 :', answer_1)
 # oke, we gaan door met korste afstanden verbinden totdat alles met elkaar
 # verbonden is...
 
-for dist, i, j in distances[1000:]:
+for num, (dist, i, j) in enumerate(distances[1000:]):
     join_network_elements(i,j)
     if len(networks) == 1:
-        print('Joeppie')
-        print(boxes[i], boxes[j])
+        print('All boxes connected after', num + 1000, 'connections')
         print('answer part 2 :', boxes[i][0] * boxes[j][0])
         break
+else:
+    print("Oeps: dis sjoed not happen") # because the break...
 
+# dus....
 
